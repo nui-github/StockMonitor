@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
+import { getHealthReport } from "@/lib/services/health";
 
-// Phase 0: ยังไม่เชื่อม DB/Redis/provider จริง (ดู docs/09-ROADMAP.md Phase 1)
-// endpoint นี้ยืนยันแค่ว่า Next.js server รันอยู่
 export async function GET() {
+  const report = await getHealthReport();
+
   return NextResponse.json({
     data: {
       status: "ok",
-      db: "not_configured",
-      redis: "not_configured",
-      providers: {},
+      ...report,
       version: process.env.npm_package_version ?? "0.1.0",
     },
   });

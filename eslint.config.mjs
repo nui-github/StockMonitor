@@ -31,7 +31,12 @@ const eslintConfig = [
             },
             {
               target: ["./src/lib/providers/**"],
-              from: ["./src/components/**", "react", "react-dom"],
+              from: ["./src/components/**"],
+              message: "lib/providers/* ห้าม import React (CLAUDE.md ข้อ 1)",
+            },
+            {
+              target: ["./src/lib/providers/**"],
+              from: ["react", "react-dom"],
               message: "lib/providers/* ห้าม import React (CLAUDE.md ข้อ 1)",
             },
           ],

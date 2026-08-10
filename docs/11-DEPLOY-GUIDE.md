@@ -135,7 +135,7 @@ Vercel → Project → Settings → Environment Variables
 | ตัวแปร | ค่า | Prod | Preview |
 |--------|-----|:----:|:-------:|
 | `DATABASE_URL` | จาก Neon | ✅ | ✅ (แนะนำใช้ Neon branch แยก) |
-| `REDIS_URL` / `UPSTASH_REDIS_REST_URL` | จาก Upstash | ✅ | ✅ |
+| `UPSTASH_REDIS_REST_URL` | จาก Upstash | ✅ | ✅ |
 | `UPSTASH_REDIS_REST_TOKEN` | จาก Upstash | ✅ | ✅ |
 | `ANTHROPIC_API_KEY` | จาก Anthropic | ✅ | ✅ |
 | `AI_MODEL_PRIMARY` | `claude-opus-5` | ✅ | ✅ |
