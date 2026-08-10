@@ -5,12 +5,20 @@ import { Plus, Search } from "lucide-react";
 import { Dialog } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { useSearch } from "@/hooks/useSearch";
-import { useWatchlistStore } from "@/stores/watchlist";
 
-export function AddSymbolDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AddSymbolDialog({
+  open,
+  onClose,
+  onAdd,
+  watchlistSymbols,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onAdd: (symbol: string) => void;
+  watchlistSymbols: string[];
+}) {
   const [query, setQuery] = useState("");
   const { data: results, isLoading } = useSearch(query, query.length > 0);
-  const { symbols, add } = useWatchlistStore();
 
   return (
     <Dialog open={open} onClose={onClose} title="เพิ่มสินทรัพย์ที่ติดตาม">
@@ -35,7 +43,7 @@ export function AddSymbolDialog({ open, onClose }: { open: boolean; onClose: () 
         )}
 
         {results?.map((instrument) => {
-          const already = symbols.includes(instrument.symbol);
+          const already = watchlistSymbols.includes(instrument.symbol);
           return (
             <div
               key={instrument.symbol}
@@ -49,7 +57,7 @@ export function AddSymbolDialog({ open, onClose }: { open: boolean; onClose: () 
                 size="sm"
                 variant={already ? "ghost" : "outline"}
                 disabled={already}
-                onClick={() => add(instrument.symbol)}
+                onClick={() => onAdd(instrument.symbol)}
               >
                 <Plus size={14} aria-hidden="true" />
                 {already ? "เพิ่มแล้ว" : "เพิ่ม"}

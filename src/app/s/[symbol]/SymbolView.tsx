@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
+import type { Session } from "next-auth";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -11,6 +12,8 @@ import { StatGrid } from "@/components/market/StatGrid";
 import { PriceChart } from "@/components/chart/PriceChart";
 import { ChartToolbar } from "@/components/chart/ChartToolbar";
 import { IndicatorPanel } from "@/components/chart/IndicatorPanel";
+import { NewsList } from "@/components/news/NewsList";
+import { AnalysisPanel } from "@/components/analysis/AnalysisPanel";
 import { useQuote } from "@/hooks/useQuotes";
 import { useQuoteStream } from "@/hooks/useQuoteStream";
 import { useCandles } from "@/hooks/useCandles";
@@ -20,7 +23,7 @@ import type { RangeKey } from "@/types/market";
 // REST ใช้ดึงค่าตั้งต้น + สถานะ error/not-found; SSE overlay ราคาสดทับเมื่อเชื่อมต่อได้ (docs/01 §3 Path A)
 const QUOTE_POLL_MS = 15_000;
 
-export function SymbolView({ symbol }: { symbol: string }) {
+export function SymbolView({ symbol, session }: { symbol: string; session: Session | null }) {
   const [range, setRange] = useState<RangeKey>("6mo");
   const [indicators, setIndicators] = useState<string[]>([]);
 
@@ -81,41 +84,56 @@ export function SymbolView({ symbol }: { symbol: string }) {
       {quote && <QuoteHeader instrument={instrument} quote={quote} live={connected} />}
       {quote && <StatGrid quote={quote} />}
 
-      <Card>
-        <CardContent className="flex flex-col gap-4 pt-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <ChartToolbar range={range} onRangeChange={setRange} />
-            <button
-              type="button"
-              onClick={() => refetchCandles()}
-              className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-fg-subtle transition-colors hover:bg-surface-2 hover:text-fg"
-            >
-              <RefreshCw size={13} aria-hidden="true" />
-              รีเฟรช
-            </button>
-          </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <Card>
+          <CardContent className="flex flex-col gap-4 pt-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <ChartToolbar range={range} onRangeChange={setRange} />
+              <button
+                type="button"
+                onClick={() => refetchCandles()}
+                className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-fg-subtle transition-colors hover:bg-surface-2 hover:text-fg"
+              >
+                <RefreshCw size={13} aria-hidden="true" />
+                รีเฟรช
+              </button>
+            </div>
 
-          <IndicatorPanel selected={indicators} onToggle={toggleIndicator} />
+            <IndicatorPanel selected={indicators} onToggle={toggleIndicator} />
 
-          <div className="h-[420px]">
-            {candlesLoading && !candleData && <Skeleton className="h-full w-full" />}
+            <div className="h-[420px]">
+              {candlesLoading && !candleData && <Skeleton className="h-full w-full" />}
 
-            {!candlesLoading && candlesError && (
-              <ErrorState
-                message="ดึงข้อมูลกราฟไม่สำเร็จ"
-                code={candlesError instanceof Error ? candlesError.message : "PROVIDER_UNAVAILABLE"}
-                onRetry={() => refetchCandles()}
-              />
-            )}
+              {!candlesLoading && candlesError && (
+                <ErrorState
+                  message="ดึงข้อมูลกราฟไม่สำเร็จ"
+                  code={candlesError instanceof Error ? candlesError.message : "PROVIDER_UNAVAILABLE"}
+                  onRetry={() => refetchCandles()}
+                />
+              )}
 
-            {!candlesError && candleData && candles.length === 0 && (
-              <EmptyState title="ยังไม่มีข้อมูลกราฟในช่วงเวลานี้" description="ลองเลือกช่วงเวลาอื่น" />
-            )}
+              {!candlesError && candleData && candles.length === 0 && (
+                <EmptyState title="ยังไม่มีข้อมูลกราฟในช่วงเวลานี้" description="ลองเลือกช่วงเวลาอื่น" />
+              )}
 
-            {!candlesError && candles.length > 0 && <PriceChart candles={candles} />}
-          </div>
-        </CardContent>
-      </Card>
+              {!candlesError && candles.length > 0 && <PriceChart candles={candles} />}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex flex-col gap-4">
+          <AnalysisPanel symbol={symbol} session={session} />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>ข่าวล่าสุด</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <NewsList symbol={symbol} />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       <p className="text-center text-xs text-fg-subtle">
         ข้อมูลและบทวิเคราะห์บนเว็บไซต์นี้จัดทำเพื่อการศึกษาเท่านั้น ไม่ถือเป็นคำแนะนำการลงทุน

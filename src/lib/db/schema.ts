@@ -15,6 +15,16 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core";
 
+// id = Google OAuth "sub" claim ตรง ๆ (ตัวเลขสตริง, ไม่ใช่ uuid) — ไม่ใช้ NextAuth DB adapter,
+// เก็บ session แบบ JWT แล้ว upsert ตารางนี้เองใน signIn callback (src/auth.ts)
+export const users = pgTable("users", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  email: text("email").notNull(),
+  name: text("name"),
+  image: text("image"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export const instruments = pgTable(
   "instruments",
   {
@@ -124,7 +134,7 @@ export const aiReports = pgTable(
     report: jsonb("report").notNull(),
     sourceIds: jsonb("source_ids").$type<string[]>().notNull(),
     model: varchar("model", { length: 48 }).notNull(),
-    requestedBy: uuid("requested_by"),
+    requestedBy: varchar("requested_by", { length: 64 }).references(() => users.id),
     idempotencyKey: varchar("idempotency_key", { length: 128 }),
     inputTokens: integer("input_tokens"),
     outputTokens: integer("output_tokens"),
@@ -147,7 +157,9 @@ export const aiReports = pgTable(
 export const usageDaily = pgTable(
   "usage_daily",
   {
-    userId: uuid("user_id").notNull(),
+    userId: varchar("user_id", { length: 64 })
+      .notNull()
+      .references(() => users.id),
     day: varchar("day", { length: 10 }).notNull(),
     reports: integer("reports").notNull().default(0),
     costUsd: doublePrecision("cost_usd").notNull().default(0),
@@ -158,7 +170,9 @@ export const usageDaily = pgTable(
 export const watchlists = pgTable(
   "watchlists",
   {
-    userId: uuid("user_id").notNull(),
+    userId: varchar("user_id", { length: 64 })
+      .notNull()
+      .references(() => users.id),
     symbol: varchar("symbol", { length: 24 })
       .notNull()
       .references(() => instruments.symbol),
@@ -172,7 +186,9 @@ export const alerts = pgTable(
   "alerts",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id").notNull(),
+    userId: varchar("user_id", { length: 64 })
+      .notNull()
+      .references(() => users.id),
     symbol: varchar("symbol", { length: 24 }).notNull(),
     type: varchar("type", { length: 24 }).notNull(),
     value: doublePrecision("value"),

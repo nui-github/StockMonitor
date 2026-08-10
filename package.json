@@ -16,6 +16,7 @@
     "db:seed": "tsx scripts/seed-instruments.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0",
     "@neondatabase/serverless": "^1.1.0",
     "@tanstack/react-query": "^5.101.4",
     "@upstash/ratelimit": "^2.0.8",
@@ -24,8 +25,10 @@
     "lightweight-charts": "^5.2.0",
     "lucide-react": "^0.542.0",
     "next": "15.5.23",
+    "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "rss-parser": "^3.13.0",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
   },

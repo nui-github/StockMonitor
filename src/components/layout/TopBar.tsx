@@ -1,9 +1,11 @@
 "use client";
 
 import { Search, Sparkles } from "lucide-react";
+import type { Session } from "next-auth";
 import { siteConfig } from "@/lib/config/site";
+import { AuthButton } from "./AuthButton";
 
-export function TopBar({ onOpenSearch }: { onOpenSearch: () => void }) {
+export function TopBar({ onOpenSearch, session }: { onOpenSearch: () => void; session: Session | null }) {
   return (
     <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border-soft bg-surface-1/80 px-4 backdrop-blur">
       <div className="flex items-center gap-2 font-semibold text-fg">
@@ -25,6 +27,9 @@ export function TopBar({ onOpenSearch }: { onOpenSearch: () => void }) {
       <kbd className="hidden rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-fg-subtle sm:inline">
         ⌘K
       </kbd>
+      <div className="ml-auto">
+        <AuthButton session={session} />
+      </div>
     </header>
   );
 }

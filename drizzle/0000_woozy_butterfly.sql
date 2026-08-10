@@ -7,7 +7,7 @@ CREATE TABLE "ai_reports" (
 	"report" jsonb NOT NULL,
 	"source_ids" jsonb NOT NULL,
 	"model" varchar(48) NOT NULL,
-	"requested_by" uuid,
+	"requested_by" varchar(64),
 	"idempotency_key" varchar(128),
 	"input_tokens" integer,
 	"output_tokens" integer,
@@ -23,7 +23,7 @@ CREATE TABLE "ai_reports" (
 --> statement-breakpoint
 CREATE TABLE "alerts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"user_id" varchar(64) NOT NULL,
 	"symbol" varchar(24) NOT NULL,
 	"type" varchar(24) NOT NULL,
 	"value" double precision,
@@ -108,15 +108,23 @@ CREATE TABLE "ohlcv" (
 );
 --> statement-breakpoint
 CREATE TABLE "usage_daily" (
-	"user_id" uuid NOT NULL,
+	"user_id" varchar(64) NOT NULL,
 	"day" varchar(10) NOT NULL,
 	"reports" integer DEFAULT 0 NOT NULL,
 	"cost_usd" double precision DEFAULT 0 NOT NULL,
 	CONSTRAINT "usage_daily_user_id_day_pk" PRIMARY KEY("user_id","day")
 );
 --> statement-breakpoint
+CREATE TABLE "users" (
+	"id" varchar(64) PRIMARY KEY NOT NULL,
+	"email" text NOT NULL,
+	"name" text,
+	"image" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "watchlists" (
-	"user_id" uuid NOT NULL,
+	"user_id" varchar(64) NOT NULL,
 	"symbol" varchar(24) NOT NULL,
 	"sort_order" integer DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -124,10 +132,14 @@ CREATE TABLE "watchlists" (
 );
 --> statement-breakpoint
 ALTER TABLE "ai_reports" ADD CONSTRAINT "ai_reports_symbol_instruments_symbol_fk" FOREIGN KEY ("symbol") REFERENCES "public"."instruments"("symbol") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "ai_reports" ADD CONSTRAINT "ai_reports_requested_by_users_id_fk" FOREIGN KEY ("requested_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "alerts" ADD CONSTRAINT "alerts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "article_chunks" ADD CONSTRAINT "article_chunks_article_id_news_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."news_articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "article_instrument" ADD CONSTRAINT "article_instrument_article_id_news_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."news_articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "article_instrument" ADD CONSTRAINT "article_instrument_symbol_instruments_symbol_fk" FOREIGN KEY ("symbol") REFERENCES "public"."instruments"("symbol") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "news_articles" ADD CONSTRAINT "news_articles_domain_news_sources_domain_fk" FOREIGN KEY ("domain") REFERENCES "public"."news_sources"("domain") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "usage_daily" ADD CONSTRAINT "usage_daily_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "watchlists" ADD CONSTRAINT "watchlists_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "watchlists" ADD CONSTRAINT "watchlists_symbol_instruments_symbol_fk" FOREIGN KEY ("symbol") REFERENCES "public"."instruments"("symbol") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_reports_symbol_created" ON "ai_reports" USING btree ("symbol","created_at");--> statement-breakpoint
 CREATE INDEX "idx_reports_user_created" ON "ai_reports" USING btree ("requested_by","created_at");--> statement-breakpoint

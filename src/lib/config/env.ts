@@ -10,6 +10,17 @@ const envSchema = z.object({
   TWELVEDATA_API_KEY: z.string().min(1).optional(),
   CRON_SECRET: z.string().min(1).optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  NEXTAUTH_SECRET: z.string().min(1).optional(),
+  GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  AI_MODEL_PRIMARY: z.string().min(1).default("claude-opus-5"),
+  AI_MODEL_FAST: z.string().min(1).default("claude-haiku-4-5"),
+  AI_DAILY_REPORT_CAP: z.coerce.number().int().min(0).default(50),
+  AI_USER_DAILY_CAP: z.coerce.number().int().min(0).default(10),
+  AI_USER_HOURLY_CAP: z.coerce.number().int().min(0).default(3),
+  AI_REPORT_TTL_HOURS: z.coerce.number().int().min(1).default(6),
+  USD_THB_RATE: z.coerce.number().positive().default(33),
 });
 
 const parsed = envSchema.safeParse({
@@ -20,6 +31,17 @@ const parsed = envSchema.safeParse({
   TWELVEDATA_API_KEY: process.env.TWELVEDATA_API_KEY,
   CRON_SECRET: process.env.CRON_SECRET,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+  AI_MODEL_PRIMARY: process.env.AI_MODEL_PRIMARY,
+  AI_MODEL_FAST: process.env.AI_MODEL_FAST,
+  AI_DAILY_REPORT_CAP: process.env.AI_DAILY_REPORT_CAP,
+  AI_USER_DAILY_CAP: process.env.AI_USER_DAILY_CAP,
+  AI_USER_HOURLY_CAP: process.env.AI_USER_HOURLY_CAP,
+  AI_REPORT_TTL_HOURS: process.env.AI_REPORT_TTL_HOURS,
+  USD_THB_RATE: process.env.USD_THB_RATE,
 });
 
 if (!parsed.success) {
@@ -35,4 +57,12 @@ export function isDbConfigured(): boolean {
 
 export function isRedisConfigured(): boolean {
   return Boolean(env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN);
+}
+
+export function isAiConfigured(): boolean {
+  return Boolean(env.ANTHROPIC_API_KEY);
+}
+
+export function isAuthConfigured(): boolean {
+  return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
 }
