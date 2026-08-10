@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import type { Session } from "next-auth";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
+import { Footer } from "./Footer";
 import { CommandPalette } from "./CommandPalette";
 
 export function AppShell({ children, session = null }: { children: ReactNode; session?: Session | null }) {
@@ -25,8 +26,9 @@ export function AppShell({ children, session = null }: { children: ReactNode; se
       <TopBar onOpenSearch={() => setSearchOpen(true)} session={session} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6">{children}</div>
+        <main className="flex flex-1 flex-col overflow-y-auto">
+          <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6">{children}</div>
+          <Footer />
         </main>
       </div>
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />

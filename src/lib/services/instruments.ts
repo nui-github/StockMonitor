@@ -52,6 +52,22 @@ export async function searchInstruments({ query, type, limit }: SearchParams): P
   }));
 }
 
+export async function listAllInstruments(): Promise<Instrument[]> {
+  const db = getDb();
+  if (!db) return fromSeed("", "all", INSTRUMENT_SEED.length);
+
+  const rows = await db.select().from(schema.instruments);
+  return rows.map((r) => ({
+    symbol: r.symbol,
+    name: r.name,
+    nameTh: r.nameTh,
+    assetClass: r.assetClass as AssetClass,
+    exchange: r.exchange,
+    currency: r.currency,
+    logoUrl: r.logoUrl,
+  }));
+}
+
 export async function getInstrument(symbol: string): Promise<Instrument | null> {
   const db = getDb();
   const upper = symbol.toUpperCase();

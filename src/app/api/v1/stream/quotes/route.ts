@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { checkGuestRateLimit, getClientIp } from "@/lib/api/rate-limit";
 import { getQuotes } from "@/lib/services/quotes";
 
 export const runtime = "nodejs";
@@ -17,6 +18,14 @@ const QuerySchema = z.object({
 
 // SSE — ยิงราคาทุก ๆ POLL_MS จนกว่า client จะตัดการเชื่อมต่อ (docs/01 §3 Path A)
 export async function GET(req: Request) {
+  const rate = await checkGuestRateLimit(getClientIp(req));
+  if (!rate.success) {
+    return new Response(JSON.stringify({ error: { code: "RATE_LIMITED", message: "เชื่อมต่อถี่เกินไป กรุณาลองใหม่ภายหลัง" } }), {
+      status: 429,
+      headers: { "content-type": "application/json", "Retry-After": String(rate.retryAfterSeconds) },
+    });
+  }
+
   const { searchParams } = new URL(req.url);
   const parsed = QuerySchema.safeParse({ symbols: searchParams.get("symbols") ?? undefined });
 

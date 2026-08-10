@@ -120,7 +120,7 @@ export function WatchlistView({ session }: { session: Session | null }) {
                   type="button"
                   onClick={() => handleRemove(symbol)}
                   aria-label={`เอา ${symbol} ออกจากรายการติดตาม`}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-fg-subtle opacity-0 transition-opacity hover:bg-surface-3 hover:text-down group-hover:opacity-100"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-fg-subtle opacity-0 transition-opacity hover:bg-surface-3 hover:text-down focus-visible:opacity-100 group-hover:opacity-100"
                 >
                   <X size={14} aria-hidden="true" />
                 </button>

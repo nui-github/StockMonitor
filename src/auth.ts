@@ -12,6 +12,9 @@ const secret = env.NEXTAUTH_SECRET ?? randomBytes(32).toString("hex");
 // login ผูกกับ POST /api/v1/analysis/[symbol]/generate (CLAUDE.md ข้อ 9) และ /api/v1/watchlist
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret,
+  // Vercel ใช้ URL ที่ไม่รู้ล่วงหน้า (preview deployment / custom domain) — ไม่ตั้ง trustHost แล้ว auth()
+  // จะ throw UntrustedHost ทุกครั้งที่เรียกตอน production build (ทุก page.tsx เรียก await auth())
+  trustHost: true,
   providers: isAuthConfigured()
     ? [Google({ clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET })]
     : [],

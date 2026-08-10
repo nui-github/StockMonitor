@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
 
 export function Dialog({
@@ -15,6 +15,7 @@ export function Dialog({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = ref.current;
@@ -27,6 +28,7 @@ export function Dialog({
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       onClose={onClose}
       onCancel={onClose}
       onClick={(e) => {
@@ -38,7 +40,7 @@ export function Dialog({
       ].join(" ")}
     >
       <div className="flex items-center justify-between border-b border-border-soft px-4 py-3">
-        <h2 className="text-sm font-medium text-fg">{title}</h2>
+        <h2 id={titleId} className="text-sm font-medium text-fg">{title}</h2>
         <button
           type="button"
           onClick={onClose}

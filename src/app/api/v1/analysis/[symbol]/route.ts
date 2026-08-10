@@ -1,11 +1,21 @@
 import { z } from "zod";
 import { apiError, apiOk } from "@/lib/api/response";
+import { checkGuestRateLimit, getClientIp } from "@/lib/api/rate-limit";
 import { getCachedAnalysis } from "@/lib/services/analysis";
 
 const QuerySchema = z.object({ horizon: z.enum(["short", "medium", "long"]).default("short") });
 
 // อ่าน cache อย่างเดียว — ห้ามสร้างบทวิเคราะห์ใหม่ที่นี่เด็ดขาด (CLAUDE.md ข้อ 9)
 export async function GET(req: Request, { params }: { params: Promise<{ symbol: string }> }) {
+  const rate = await checkGuestRateLimit(getClientIp(req));
+  if (!rate.success) {
+    return apiError("RATE_LIMITED", "เรียก API ถี่เกินไป กรุณาลองใหม่ภายหลัง", {
+      status: 429,
+      retryable: true,
+      retryAfterSeconds: rate.retryAfterSeconds,
+    });
+  }
+
   const { symbol } = await params;
   const { searchParams } = new URL(req.url);
   const parsed = QuerySchema.safeParse({ horizon: searchParams.get("horizon") ?? undefined });
