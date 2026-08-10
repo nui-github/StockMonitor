@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Thai, Noto_Sans, Noto_Sans_Mono } from "next/font/google";
 import { siteConfig } from "@/lib/config/site";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import "./globals.css";
 
 const notoThai = Noto_Sans_Thai({
@@ -38,7 +39,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="th"
       className={`${notoThai.variable} ${notoSans.variable} ${notoMono.variable} dark`}
     >
-      <body className="bg-bg font-sans text-fg antialiased">{children}</body>
+      <body className="bg-bg font-sans text-fg antialiased">
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }

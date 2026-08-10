@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { apiError, apiOk } from "@/lib/api/response";
 import { checkGuestRateLimit, getClientIp } from "@/lib/api/rate-limit";
-import { computeIndicators, getCandles, type RangeKey } from "@/lib/services/candles";
+import { computeIndicators, getCandles } from "@/lib/services/candles";
+import type { RangeKey } from "@/types/market";
 
 const QuerySchema = z.object({
   tf: z.enum(["1m", "5m", "15m", "1h", "1d", "1wk", "1mo"]).default("1d"),

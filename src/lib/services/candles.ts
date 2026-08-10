@@ -4,11 +4,9 @@ import { CACHE_TTL_SECONDS } from "@/lib/cache/ttl";
 import { getCandlesFromRegistry } from "@/lib/providers/registry";
 import type { ProviderError } from "@/lib/providers/types";
 import { err, ok, type Result } from "@/lib/utils/result";
-import type { Candle, Timeframe } from "@/types/market";
+import type { Candle, RangeKey, Timeframe } from "@/types/market";
 import { atr, bollinger, ema, macd, rsi, sma } from "@/lib/indicators";
 import { getInstrument } from "./instruments";
-
-export type RangeKey = "1d" | "5d" | "1mo" | "6mo" | "ytd" | "1y" | "5y" | "max";
 
 const RANGE_TO_MS: Record<Exclude<RangeKey, "ytd" | "max">, number> = {
   "1d": 1 * 24 * 60 * 60 * 1000,
