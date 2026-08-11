@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Thai, Noto_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { siteConfig, getSiteUrl } from "@/lib/config/site";
 import { QueryProvider } from "@/components/providers/QueryProvider";
@@ -7,23 +6,26 @@ import { I18nProvider } from "@/i18n/provider";
 import { defaultLocale } from "@/i18n/config";
 import "./globals.css";
 
-const notoThai = Noto_Sans_Thai({
-  subsets: ["thai", "latin"],
-  weight: ["400", "500", "600", "700"],
+// self-host ทั้ง 3 ตัว แทน next/font/google — Next 15.5.23 pin URL ไว้กับ hash ที่ Google เปลี่ยนไปแล้ว
+// (ทุกตัวกลายเป็น variable font ไฟล์เดียวคุมทุกน้ำหนัก ไม่ใช่ static ต่อ weight เหมือนเดิม) ทำให้ build/dev
+// fail ด้วย 404 เป็นระยะเมื่อ Google หมุน hash — เจอกับ Mono ก่อน (self-host ไปแล้ว) แล้วเจอกับ Sans ตามมา
+// (บล็อกทั้งหน้าเพราะ layout.tsx ใช้ตรง ๆ) เลย self-host รวดเดียวทั้ง 3 ตัวกันปัญหาเดิมซ้ำกับ Thai ทีหลัง
+// ไฟล์ Thai ดาวน์โหลดมาเฉพาะช่วง unicode Thai เท่านั้น (ไม่รวม latin) เพราะ font-sans ใน globals.css
+// stack notoThai ต่อด้วย notoSans อยู่แล้ว — อักษร latin ที่ notoThai ไม่มี browser จะ fallback ไป notoSans เอง
+const notoThai = localFont({
+  src: "./fonts/NotoSansThai-Thai.woff2",
+  weight: "400 700",
   variable: "--font-noto-thai",
   display: "swap",
 });
 
-const notoSans = Noto_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const notoSans = localFont({
+  src: "./fonts/NotoSans-Latin.woff2",
+  weight: "400 600",
   variable: "--font-noto-sans",
   display: "swap",
 });
 
-// self-host แทน next/font/google — Next 15.5.23 pin URL ของ Noto Sans Mono ไว้กับ hash ที่ Google
-// เลิกให้บริการแล้ว (ตัว family นี้กลายเป็น variable font ไฟล์เดียวคุมทุกน้ำหนัก ไม่ใช่ static ต่อ weight
-// เหมือนเดิม) ทำให้ build fail ด้วย 404 ทุกครั้ง — self-host ตัดปัญหาพึ่งพา network ตอน build ไปเลย
 const notoMono = localFont({
   src: "./fonts/NotoSansMono-Latin.woff2",
   weight: "400 600",
