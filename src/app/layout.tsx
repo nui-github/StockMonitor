@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { siteConfig, getSiteUrl } from "@/lib/config/site";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { I18nProvider } from "@/i18n/provider";
 import { defaultLocale } from "@/i18n/config";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import "./globals.css";
 
 // self-host ทั้ง 3 ตัว แทน next/font/google — Next 15.5.23 pin URL ไว้กับ hash ที่ Google เปลี่ยนไปแล้ว
@@ -52,6 +54,22 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
   },
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icons/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: siteConfig.name,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#05070a",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -64,6 +82,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <QueryProvider>
           <I18nProvider>{children}</I18nProvider>
         </QueryProvider>
+        <ServiceWorkerRegister />
+        <InstallPrompt />
       </body>
     </html>
   );

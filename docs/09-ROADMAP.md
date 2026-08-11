@@ -79,7 +79,7 @@
 - [ ] i18n สลับ TH/EN (โครงเตรียมไว้ตั้งแต่ P0)
 - [ ] AI chat ต่อสินทรัพย์ (RAG corpus เดิม)
 - [ ] หุ้นไทย (SET) — ต้องเคลียร์เรื่อง data licence ก่อน ดู [docs/03 §2](03-DATA-SOURCES.md)
-- [ ] PWA / mobile app
+- [x] PWA / mobile app
 
 ---
 
