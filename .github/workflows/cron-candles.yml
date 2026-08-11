@@ -1,0 +1,18 @@
+name: cron-candles
+
+on:
+  schedule:
+    - cron: "*/15 * * * *" # ทุก 15 นาที — refresh-candles ไม่จำเป็นต้องถี่เท่า ingest-news/evaluate-alerts
+  workflow_dispatch:
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    env:
+      BASE: ${{ vars.BASE_URL }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: refresh candles
+        run: |
+          curl -fsS -X POST "$BASE/api/cron/refresh-candles" \
+            -H "Authorization: Bearer $CRON_SECRET"

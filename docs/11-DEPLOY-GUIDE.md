@@ -193,32 +193,53 @@ curl https://<your-app>.vercel.app/api/health
 
 ## ขั้นที่ 7 — Cron (ข้อจำกัดของ Hobby)
 
-**Vercel Hobby: cron ได้แค่ 2 job และรันได้วันละครั้ง** ซึ่งไม่พอสำหรับ ingest ข่าวทุก 5 นาที
+**Vercel Hobby: cron รันได้แค่วันละครั้ง** ซึ่งไม่พอสำหรับ ingest ข่าว/refresh candle/evaluate alert ที่ต้องถี่กว่านั้นมาก
+ยิงถี่กว่านั้นผ่าน `vercel.json` โดยตรง **deploy จะ fail ทันที** ไม่ใช่แค่ cron เงียบ ๆ — เจอมาแล้วจริง (`vercel.json` ของโปรเจกต์นี้เลยไม่มี `crons` เลย)
 
-ทางออกฟรี: ใช้ **GitHub Actions** ยิงเข้ามาแทน
+ทางออกฟรี: ใช้ **GitHub Actions** ยิงเข้ามาแทนทั้งหมด แยกเป็น 2 workflow ตามความถี่ที่ต้องการ
 
 ```yaml
-# .github/workflows/cron.yml
-name: cron
+# .github/workflows/cron.yml — ทุก 5 นาที
+name: cron-fast
 on:
   schedule:
-    - cron: '*/15 * * * *'    # ทุก 15 นาที (Actions ไม่การันตีตรงเป๊ะ อาจคลาด 5-10 นาที)
+    - cron: '*/5 * * * *'     # Actions ไม่การันตีตรงเป๊ะ อาจคลาด 5-10 นาที
   workflow_dispatch:           # กดรันเองได้จากหน้า Actions
 jobs:
   tick:
     runs-on: ubuntu-latest
+    env:
+      BASE: ${{ vars.BASE_URL }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
     steps:
       - name: ingest news
         run: |
           curl -fsS -X POST "$BASE/api/cron/ingest-news" \
             -H "Authorization: Bearer $CRON_SECRET"
+      - name: evaluate alerts
+        run: |
+          curl -fsS -X POST "$BASE/api/cron/evaluate-alerts" \
+            -H "Authorization: Bearer $CRON_SECRET"
+```
+
+```yaml
+# .github/workflows/cron-candles.yml — ทุก 15 นาที (ไม่ต้องถี่เท่าอีก 2 job)
+name: cron-candles
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    env:
+      BASE: ${{ vars.BASE_URL }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
       - name: refresh candles
         run: |
           curl -fsS -X POST "$BASE/api/cron/refresh-candles" \
             -H "Authorization: Bearer $CRON_SECRET"
-    env:
-      BASE: ${{ vars.BASE_URL }}
-      CRON_SECRET: ${{ secrets.CRON_SECRET }}
 ```
 
 ตั้งค่าที่ GitHub → Settings → Secrets and variables → Actions:

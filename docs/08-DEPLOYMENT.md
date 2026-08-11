@@ -50,24 +50,18 @@ export const env = z.object({
 }).parse(process.env);
 ```
 
-## 4. Vercel Cron
+## 4. Cron — GitHub Actions (ไม่ใช้ Vercel Cron)
 
-```json
-// vercel.json
-{
-  "crons": [
-    { "path": "/api/cron/ingest-news",      "schedule": "*/5 * * * *" },
-    { "path": "/api/cron/embed-articles",   "schedule": "*/10 * * * *" },
-    { "path": "/api/cron/refresh-candles",  "schedule": "*/15 * * * *" },
-    { "path": "/api/cron/evaluate-alerts",  "schedule": "* * * * *" },
-    { "path": "/api/cron/cleanup",          "schedule": "0 19 * * *" }
-  ]
-}
-```
-ทุก handler ตรวจ `Authorization: Bearer $CRON_SECRET` ก่อนทำงาน และ log ลง `job_runs`
+**Vercel Hobby จำกัด cron ที่รันได้วันละครั้งเท่านั้น** — ไม่พอสำหรับ ingest ข่าว/candle/alert ที่ต้องถี่กว่านั้นมาก
+(ยิงถี่กว่านั้นผ่าน `vercel.json` จะทำให้ **deploy fail ทุกครั้ง** ไม่ใช่แค่ cron ไม่ทำงาน — เจอมาแล้วจริงในโปรเจกต์นี้)
+`vercel.json` จึงไม่มี `crons` เลย ใช้ **GitHub Actions schedule** ยิงเข้ามาแทนทั้งหมด (ดู [docs/11 §7](11-DEPLOY-GUIDE.md) สำหรับ YAML เต็ม):
+
+- `.github/workflows/cron.yml` — ทุก 5 นาที: `ingest-news`, `evaluate-alerts`
+- `.github/workflows/cron-candles.yml` — ทุก 15 นาที: `refresh-candles`
+
+ทุก handler ตรวจ `Authorization: Bearer $CRON_SECRET` ก่อนทำงาน (รับทั้ง `GET`/`POST` — เผื่อ trigger มือ)
 
 > ⚠️ **ไม่มี cron `generate-analysis`** — บทวิเคราะห์ AI สร้างเมื่อผู้ใช้กดปุ่มเท่านั้น ([docs/05 §7](05-AI-PIPELINE.md#7-trigger--on-demand-เท่านั้น-ไม่มี-cron))
-> Vercel Hobby จำกัด cron ที่ **2 job และรันได้วันละครั้ง** — ถ้าใช้ Hobby ให้รวม job เป็น `/api/cron/tick` ตัวเดียวแล้วเรียกใช้ภายนอกด้วย GitHub Actions schedule (ดู [docs/11 §7](11-DEPLOY-GUIDE.md))
 
 ## 5. CI/CD (GitHub Actions)
 
