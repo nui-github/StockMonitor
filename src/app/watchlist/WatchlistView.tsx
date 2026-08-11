@@ -130,7 +130,7 @@ export function WatchlistView({ session }: { session: Session | null }) {
         </div>
       )}
 
-      <AddSymbolDialog open={dialogOpen} onClose={() => setDialogOpen(false)} onAdd={handleAdd} watchlistSymbols={symbols} />
+      <AddSymbolDialog open={dialogOpen} onClose={() => setDialogOpen(false)} onAdd={handleAdd} selectedSymbols={symbols} />
     </div>
   );
 }

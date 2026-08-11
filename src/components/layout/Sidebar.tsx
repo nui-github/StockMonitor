@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { LayoutDashboard, LineChart, Star, Bell, Sparkles, Info } from "lucide-react";
+import { LayoutDashboard, LineChart, Star, GitCompare, Bell, Sparkles, Info } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "ภาพรวม", icon: LayoutDashboard },
   { href: "/markets", label: "ตลาด", icon: LineChart },
   { href: "/watchlist", label: "ติดตาม", icon: Star },
+  { href: "/compare", label: "เปรียบเทียบ", icon: GitCompare },
   { href: "/alerts", label: "แจ้งเตือน", icon: Bell },
   { href: "/account/usage", label: "การใช้งาน AI", icon: Sparkles },
 ];

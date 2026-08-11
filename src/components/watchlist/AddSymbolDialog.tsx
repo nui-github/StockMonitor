@@ -10,18 +10,20 @@ export function AddSymbolDialog({
   open,
   onClose,
   onAdd,
-  watchlistSymbols,
+  selectedSymbols,
+  title = "เพิ่มสินทรัพย์ที่ติดตาม",
 }: {
   open: boolean;
   onClose: () => void;
   onAdd: (symbol: string) => void;
-  watchlistSymbols: string[];
+  selectedSymbols: string[];
+  title?: string;
 }) {
   const [query, setQuery] = useState("");
   const { data: results, isLoading } = useSearch(query, query.length > 0);
 
   return (
-    <Dialog open={open} onClose={onClose} title="เพิ่มสินทรัพย์ที่ติดตาม">
+    <Dialog open={open} onClose={onClose} title={title}>
       <div className="relative">
         <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle" aria-hidden="true" />
         <input
@@ -43,7 +45,7 @@ export function AddSymbolDialog({
         )}
 
         {results?.map((instrument) => {
-          const already = watchlistSymbols.includes(instrument.symbol);
+          const already = selectedSymbols.includes(instrument.symbol);
           return (
             <div
               key={instrument.symbol}
