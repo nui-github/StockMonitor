@@ -212,17 +212,28 @@ Guest: เก็บ localStorage, merge เข้า DB เมื่อ login �
 
 ## 8. Alerts (P1, ต้อง auth)
 
+`GET /api/v1/alerts` — รายการของฉัน
 `POST /api/v1/alerts`
 ```jsonc
-{ "symbol":"AAPL", "type":"price_above", "value":250,
-  "channels":["push","email"], "expiresAt":null }
+{ "symbol":"AAPL", "type":"price_above", "value":250 }
 ```
-`type`: `price_above | price_below | pct_change | volume_spike | news_breaking`
+`DELETE /api/v1/alerts/[id]`
+
+`type` เต็ม spec: `price_above | price_below | pct_change | volume_spike | news_breaking`
+> ตอนนี้ทำแค่ `price_above | price_below | pct_change` (เช็คจาก quote ตรง ๆ) — `volume_spike` ต้องมี baseline
+> volume เฉลี่ยย้อนหลังที่ยังไม่มีข้อมูล, `news_breaking` ต้อง hook เข้า `ingest-news` เพิ่ม ทำทีหลังตอนมีของสองอย่างนี้
+
+channel รอบนี้มีแค่ `push` (Web Push, VAPID) — `email` ยังไม่ทำ (ต้องเลือก email provider ก่อน ดู docs/09 Phase 5)
+
+`POST /api/v1/push/subscribe` — บันทึก push subscription ของอุปกรณ์นี้ (`{ endpoint, keys: { p256dh, auth } }` ตรง PushSubscription.toJSON())
+`DELETE /api/v1/push/subscribe` — `{ "endpoint": "..." }`
 
 ## 9. Cron (ภายใน)
 
-`POST /api/cron/[job]` — ต้องมี header `Authorization: Bearer $CRON_SECRET`
+`GET|POST /api/cron/[job]` — ต้องมี header `Authorization: Bearer $CRON_SECRET`
 `job` ∈ `ingest-news | embed-articles | refresh-candles | evaluate-alerts | cleanup`
+
+> handler รับทั้ง `GET` และ `POST`: Vercel Cron (ดู `vercel.json`) ยิง `GET` เสมอ ส่วน `POST` ไว้เผื่อ trigger มือ/GitHub Actions ([docs/11 §7](11-DEPLOY-GUIDE.md))
 
 > ⚠️ **ไม่มี** `generate-analysis` ใน cron โดยเจตนา — บทวิเคราะห์สร้างจาก §5.3 เท่านั้น (ผู้ใช้กดเอง)
 

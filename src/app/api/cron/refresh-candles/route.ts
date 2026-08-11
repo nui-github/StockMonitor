@@ -7,7 +7,8 @@ export const maxDuration = 60;
 
 // เติม cache แท่งเทียนรายวันของ instrument ที่มีอยู่ล่วงหน้า กัน user แรกของช่วงเวลาต้องรอ cold cache
 // ดู docs/08 §4 — ต้องมี Authorization: Bearer $CRON_SECRET
-export async function POST(req: Request) {
+// รับทั้ง GET (Vercel Cron ยิง GET เสมอ) และ POST (docs/04 §9 + trigger มือ/GitHub Actions ตาม docs/11 §7)
+async function handler(req: Request) {
   if (!env.CRON_SECRET) {
     return apiError("NOT_CONFIGURED", "CRON_SECRET is not set", { status: 500 });
   }
@@ -26,3 +27,6 @@ export async function POST(req: Request) {
 
   return apiOk({ refreshed: succeeded, failed, total: results.length });
 }
+
+export const GET = handler;
+export const POST = handler;

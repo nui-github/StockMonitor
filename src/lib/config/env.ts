@@ -21,6 +21,10 @@ const envSchema = z.object({
   AI_USER_HOURLY_CAP: z.coerce.number().int().min(0).default(3),
   AI_REPORT_TTL_HOURS: z.coerce.number().int().min(1).default(6),
   USD_THB_RATE: z.coerce.number().positive().default(33),
+  // VAPID public key ไม่ใช่ความลับ (ออกแบบมาให้ฝั่ง client ใช้ subscribe push ได้ตรง ๆ) — NEXT_PUBLIC_ จึงไม่ผิดกฎข้อ 2
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(1).optional(),
+  VAPID_PRIVATE_KEY: z.string().min(1).optional(),
+  VAPID_SUBJECT: z.string().min(1).default("mailto:nuifolio@gmail.com"),
 });
 
 const parsed = envSchema.safeParse({
@@ -42,6 +46,9 @@ const parsed = envSchema.safeParse({
   AI_USER_HOURLY_CAP: process.env.AI_USER_HOURLY_CAP,
   AI_REPORT_TTL_HOURS: process.env.AI_REPORT_TTL_HOURS,
   USD_THB_RATE: process.env.USD_THB_RATE,
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+  VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
+  VAPID_SUBJECT: process.env.VAPID_SUBJECT,
 });
 
 if (!parsed.success) {
@@ -65,4 +72,8 @@ export function isAiConfigured(): boolean {
 
 export function isAuthConfigured(): boolean {
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+}
+
+export function isPushConfigured(): boolean {
+  return Boolean(env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY);
 }

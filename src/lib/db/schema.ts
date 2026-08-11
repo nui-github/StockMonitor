@@ -199,6 +199,21 @@ export const alerts = pgTable(
   (t) => [index("idx_alerts_active").on(t.isActive, t.symbol)],
 );
 
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: varchar("user_id", { length: 64 })
+      .notNull()
+      .references(() => users.id),
+    endpoint: text("endpoint").notNull(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("uq_push_endpoint").on(t.endpoint), index("idx_push_user").on(t.userId)],
+);
+
 export const jobRuns = pgTable(
   "job_runs",
   {

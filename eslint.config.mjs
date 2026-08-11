@@ -12,7 +12,8 @@ const compat = new FlatCompat({
 
 // กฎ layer จาก CLAUDE.md ข้อ 1:
 //   app/ , components/ , hooks/  →  lib/services/  →  lib/providers/ , lib/ai/ , lib/db/  →  vendor
-//   - component ห้าม import lib/providers/*, lib/db/*, หรือ lib/ai/* (ยกเว้น model-labels.ts ที่ตั้งใจให้ client ปลอดภัย) ตรง ๆ
+//   - component ห้าม import lib/providers/*, lib/db/*, lib/ai/* (ยกเว้น model-labels.ts ที่ตั้งใจให้ client ปลอดภัย)
+//     หรือ lib/notifications/* ตรง ๆ
 //   - lib/providers/* ห้าม import React
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
@@ -35,6 +36,12 @@ const eslintConfig = [
               except: ["**/model-labels.ts"],
               message:
                 "lib/ai/* (ยกเว้น model-labels.ts) แตะ env.ANTHROPIC_API_KEY — ห้าม import ตรง ๆ จาก UI ให้ผ่าน lib/services/* เท่านั้น (CLAUDE.md ข้อ 1, 2)",
+            },
+            {
+              target: ["./src/app/**", "./src/components/**", "./src/hooks/**"],
+              from: ["./src/lib/notifications/**"],
+              message:
+                "lib/notifications/* แตะ env.VAPID_PRIVATE_KEY — ห้าม import ตรง ๆ จาก UI ให้ผ่าน lib/jobs/* หรือ lib/services/* เท่านั้น (CLAUDE.md ข้อ 1, 2)",
             },
             {
               target: ["./src/lib/providers/**"],

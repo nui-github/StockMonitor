@@ -1,11 +1,10 @@
 import { env } from "@/lib/config/env";
 import { apiError, apiOk } from "@/lib/api/response";
-import { ingestNews } from "@/lib/jobs/ingest-news";
+import { evaluateAlerts } from "@/lib/jobs/evaluate-alerts";
 
 export const maxDuration = 60;
 
-// ดึงข่าว RSS + จับคู่ symbol เท่านั้น — ไม่เรียก Anthropic API เลย (ปลอดภัยให้รันอัตโนมัติทุก 15 นาที)
-// รัน db:seed ก่อนอย่างน้อยครั้งแรก ไม่งั้น article_instrument insert จะ FK fail (instruments ต้องมีแถวอยู่ก่อน)
+// เช็ค alert ที่ active ทุกตัวกับราคาปัจจุบัน แล้วยิง web push — ไม่แตะ AI (docs/08 §4)
 // รับทั้ง GET (Vercel Cron ยิง GET เสมอ) และ POST (docs/04 §9 + trigger มือ/GitHub Actions ตาม docs/11 §7)
 async function handler(req: Request) {
   if (!env.CRON_SECRET) {
@@ -17,7 +16,7 @@ async function handler(req: Request) {
     return apiError("UNAUTHORIZED", "invalid cron secret", { status: 401 });
   }
 
-  const stats = await ingestNews();
+  const stats = await evaluateAlerts();
   return apiOk(stats);
 }
 
