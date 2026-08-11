@@ -1,12 +1,12 @@
 import { and, desc, eq, gt, sql } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
-import { getRedis } from "@/lib/cache/redis";
 import { env } from "@/lib/config/env";
 import { bangkokDayKey, nextBangkokMidnightMs } from "@/lib/config/time";
 import { getQuote } from "./quotes";
 import { getCandles, computeIndicators } from "./candles";
 import { getInstrument } from "./instruments";
 import { getNewsForSymbol } from "./news";
+import { checkAndBumpAiQuota } from "./ai-quota";
 import { estimateCost, type EstimateResult } from "@/lib/ai/estimate";
 import { generateReport } from "@/lib/ai/pipeline";
 import { MODEL_BY_KEY, MODEL_LABEL_TH, type AiModelKey } from "@/lib/ai/client";
@@ -43,7 +43,7 @@ export interface CachedAnalysis {
   newsAvailable: number;
 }
 
-async function gatherContext(symbol: string) {
+export async function gatherContext(symbol: string) {
   const instrument = await getInstrument(symbol);
   if (!instrument) return err<{ code: "NOT_FOUND"; message: string }>({ code: "NOT_FOUND", message: `ไม่พบสินทรัพย์ ${symbol}` });
 
@@ -127,42 +127,6 @@ export interface QuotaStatus {
   resetsAt: number;
 }
 
-async function checkAndBumpQuota(userId: string): Promise<Result<void, AnalysisError>> {
-  const redis = getRedis();
-  const day = bangkokDayKey();
-
-  // global cap ทั้งระบบ กันบิลบานปลาย
-  if (redis) {
-    const globalKey = `ai_quota:global:${day}`;
-    const globalCount = await redis.incr(globalKey);
-    if (globalCount === 1) await redis.expire(globalKey, 26 * 60 * 60);
-    if (globalCount > env.AI_DAILY_REPORT_CAP) {
-      return err({ code: "SERVICE_QUOTA_EXCEEDED", message: "ระบบครบโควตาการสร้างบทวิเคราะห์ของวันนี้แล้ว กรุณาลองใหม่พรุ่งนี้" });
-    }
-
-    const hourBucket = new Date().toISOString().slice(0, 13);
-    const hourKey = `ai_quota:${userId}:hour:${hourBucket}`;
-    const hourCount = await redis.incr(hourKey);
-    if (hourCount === 1) await redis.expire(hourKey, 3600);
-    if (hourCount > env.AI_USER_HOURLY_CAP) {
-      return err({ code: "QUOTA_EXCEEDED", message: `สร้างบทวิเคราะห์ได้สูงสุด ${env.AI_USER_HOURLY_CAP} ครั้งต่อชั่วโมง`, retryAfterSeconds: 3600 });
-    }
-
-    const dayKey = `ai_quota:${userId}:day:${day}`;
-    const dayCount = await redis.incr(dayKey);
-    if (dayCount === 1) await redis.expire(dayKey, 26 * 60 * 60);
-    if (dayCount > env.AI_USER_DAILY_CAP) {
-      const resetsAt = nextBangkokMidnightMs();
-      return err({
-        code: "QUOTA_EXCEEDED",
-        message: `ครบโควตาสร้างบทวิเคราะห์ของวันนี้แล้ว (${env.AI_USER_DAILY_CAP}/${env.AI_USER_DAILY_CAP})`,
-        retryAfterSeconds: Math.ceil((resetsAt - Date.now()) / 1000),
-      });
-    }
-  }
-
-  return ok(undefined);
-}
 
 export interface GenerateParams {
   symbol: string;
@@ -205,7 +169,7 @@ export async function generateAndStoreReport(params: GenerateParams): Promise<Re
     });
   }
 
-  const quotaRes = await checkAndBumpQuota(params.userId);
+  const quotaRes = await checkAndBumpAiQuota(params.userId);
   if (!quotaRes.ok) return quotaRes;
 
   const ctxRes = await gatherContext(params.symbol);

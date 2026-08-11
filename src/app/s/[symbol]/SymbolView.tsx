@@ -14,6 +14,7 @@ import { ChartToolbar } from "@/components/chart/ChartToolbar";
 import { IndicatorPanel } from "@/components/chart/IndicatorPanel";
 import { NewsList } from "@/components/news/NewsList";
 import { AnalysisPanel } from "@/components/analysis/AnalysisPanel";
+import { ChatPanel } from "@/components/chat/ChatPanel";
 import { useQuote } from "@/hooks/useQuotes";
 import { useQuoteStream } from "@/hooks/useQuoteStream";
 import { useCandles } from "@/hooks/useCandles";
@@ -123,6 +124,8 @@ export function SymbolView({ symbol, session }: { symbol: string; session: Sessi
 
         <div className="flex flex-col gap-4">
           <AnalysisPanel symbol={symbol} session={session} />
+
+          <ChatPanel symbol={symbol} session={session} />
 
           <Card>
             <CardHeader>

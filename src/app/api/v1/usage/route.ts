@@ -14,8 +14,12 @@ export async function GET() {
   if (!summary) return apiError("NOT_CONFIGURED", "ยังไม่ได้ตั้งค่าฐานข้อมูล", { status: 503 });
 
   return apiOk({
-    today: { reports: summary.today.reports, costThb: summary.today.costUsd * env.USD_THB_RATE },
-    thisMonth: { reports: summary.thisMonth.reports, costThb: summary.thisMonth.costUsd * env.USD_THB_RATE },
+    today: { reports: summary.today.reports, chatMessages: summary.today.chatMessages, costThb: summary.today.costUsd * env.USD_THB_RATE },
+    thisMonth: {
+      reports: summary.thisMonth.reports,
+      chatMessages: summary.thisMonth.chatMessages,
+      costThb: summary.thisMonth.costUsd * env.USD_THB_RATE,
+    },
     quota: { dailyLimit: env.AI_USER_DAILY_CAP, resetsAt: nextBangkokMidnightMs() },
   });
 }

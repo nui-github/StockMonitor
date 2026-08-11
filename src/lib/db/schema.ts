@@ -163,6 +163,7 @@ export const usageDaily = pgTable(
       .references(() => users.id),
     day: varchar("day", { length: 10 }).notNull(),
     reports: integer("reports").notNull().default(0),
+    chatMessages: integer("chat_messages").notNull().default(0),
     costUsd: doublePrecision("cost_usd").notNull().default(0),
   },
   (t) => [primaryKey({ columns: [t.userId, t.day] })],
@@ -198,6 +199,26 @@ export const alerts = pgTable(
     lastFiredAt: timestamp("last_fired_at", { withTimezone: true }),
   },
   (t) => [index("idx_alerts_active").on(t.isActive, t.symbol)],
+);
+
+export const chatMessages = pgTable(
+  "chat_messages",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: varchar("user_id", { length: 64 })
+      .notNull()
+      .references(() => users.id),
+    symbol: varchar("symbol", { length: 24 }).notNull(),
+    role: varchar("role", { length: 16 }).notNull(), // "user" | "assistant"
+    content: text("content").notNull(),
+    sourceIds: jsonb("source_ids").$type<string[]>(),
+    model: varchar("model", { length: 48 }),
+    inputTokens: integer("input_tokens"),
+    outputTokens: integer("output_tokens"),
+    costUsd: doublePrecision("cost_usd"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("idx_chat_user_symbol_created").on(t.userId, t.symbol, t.createdAt)],
 );
 
 export const portfolioHoldings = pgTable(

@@ -16,7 +16,7 @@ export const SYSTEM_PROMPT = `คุณคือนักวิเคราะ�
 6. วิเคราะห์เทคนิคใช้ตัวเลข indicator ที่ให้มาเท่านั้น ห้ามเดาค่า
 7. ตอบเป็น JSON ตาม schema ที่กำหนดเท่านั้น ไม่ต้องมีข้อความอื่นนอก JSON`;
 
-interface PromptInput {
+export interface PromptInput {
   instrument: Instrument;
   quote: Quote;
   indicators: CandleIndicators;
@@ -58,7 +58,9 @@ function formatIndicators(indicators: CandleIndicators): string {
   return lines.length > 0 ? lines.join("\n") : "ไม่มีข้อมูล indicator";
 }
 
-export function buildUserPrompt({ instrument, quote, indicators, news }: PromptInput): string {
+// ก้อน context ร่วม (สินทรัพย์+ราคา+เทคนิค+ข่าว) — ใช้ทั้งบทวิเคราะห์แบบ JSON และแชทสนทนา
+// แยกออกมาเพื่อไม่ต้องคัดลอกกฎ/รูปแบบ prompt ซ้ำระหว่างสองฟีเจอร์ (docs/06 AI chat ใช้ context เดียวกับรายงาน)
+export function buildContextBlock({ instrument, quote, indicators, news }: PromptInput): string {
   const newsBlock = news
     .map(
       (n, i) =>
@@ -78,7 +80,9 @@ ${instrument.symbol} — ${instrument.nameTh ?? instrument.name} (${instrument.a
 ${formatIndicators(indicators)}
 
 ## ข่าว (อ้าง sourceId ตามนี้เท่านั้น — ใช้ id ที่ให้ ไม่ใช่เลขลำดับ [n])
-${newsBlock || "ไม่มีข่าวในระบบสำหรับสินทรัพย์นี้"}
+${newsBlock || "ไม่มีข่าวในระบบสำหรับสินทรัพย์นี้"}`;
+}
 
-จงวิเคราะห์และตอบเป็น JSON ตาม schema ที่กำหนด`;
+export function buildUserPrompt(input: PromptInput): string {
+  return `${buildContextBlock(input)}\n\nจงวิเคราะห์และตอบเป็น JSON ตาม schema ที่กำหนด`;
 }

@@ -3,8 +3,8 @@ import { getDb, schema } from "@/lib/db";
 import { bangkokDayKey } from "@/lib/config/time";
 
 export interface UsageSummary {
-  today: { reports: number; costUsd: number };
-  thisMonth: { reports: number; costUsd: number };
+  today: { reports: number; chatMessages: number; costUsd: number };
+  thisMonth: { reports: number; chatMessages: number; costUsd: number };
 }
 
 export async function getUsageSummary(userId: string): Promise<UsageSummary | null> {
@@ -16,13 +16,14 @@ export async function getUsageSummary(userId: string): Promise<UsageSummary | nu
 
   const [todayRow, monthRow] = await Promise.all([
     db
-      .select({ reports: schema.usageDaily.reports, costUsd: schema.usageDaily.costUsd })
+      .select({ reports: schema.usageDaily.reports, chatMessages: schema.usageDaily.chatMessages, costUsd: schema.usageDaily.costUsd })
       .from(schema.usageDaily)
       .where(sql`${schema.usageDaily.userId} = ${userId} and ${schema.usageDaily.day} = ${today}`)
       .then((rows) => rows[0]),
     db
       .select({
         reports: sql<number>`coalesce(sum(${schema.usageDaily.reports}), 0)`,
+        chatMessages: sql<number>`coalesce(sum(${schema.usageDaily.chatMessages}), 0)`,
         costUsd: sql<number>`coalesce(sum(${schema.usageDaily.costUsd}), 0)`,
       })
       .from(schema.usageDaily)
@@ -31,7 +32,11 @@ export async function getUsageSummary(userId: string): Promise<UsageSummary | nu
   ]);
 
   return {
-    today: { reports: todayRow?.reports ?? 0, costUsd: todayRow?.costUsd ?? 0 },
-    thisMonth: { reports: Number(monthRow?.reports ?? 0), costUsd: Number(monthRow?.costUsd ?? 0) },
+    today: { reports: todayRow?.reports ?? 0, chatMessages: todayRow?.chatMessages ?? 0, costUsd: todayRow?.costUsd ?? 0 },
+    thisMonth: {
+      reports: Number(monthRow?.reports ?? 0),
+      chatMessages: Number(monthRow?.chatMessages ?? 0),
+      costUsd: Number(monthRow?.costUsd ?? 0),
+    },
   };
 }

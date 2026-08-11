@@ -51,8 +51,11 @@ export function UsageView({ session }: { session: Session | null }) {
             </CardHeader>
             <CardContent>
               <p className="font-mono text-2xl tabular-nums text-fg">
-                {data.today.reports}
-                <span className="ml-1 text-sm text-fg-subtle">/{data.quota.dailyLimit} ฉบับ</span>
+                {data.today.reports + data.today.chatMessages}
+                <span className="ml-1 text-sm text-fg-subtle">/{data.quota.dailyLimit} ครั้ง</span>
+              </p>
+              <p className="mt-1 text-xs text-fg-subtle">
+                บทวิเคราะห์ {data.today.reports} ฉบับ · แชท {data.today.chatMessages} ข้อความ
               </p>
               <p className="mt-1 font-mono text-sm tabular-nums text-fg-subtle">≈ {formatThb(data.today.costThb)} ฿</p>
               <p className="mt-2 text-xs text-fg-subtle">โควตารีเซ็ตเวลา {formatTimeTh(data.quota.resetsAt)}</p>
@@ -64,7 +67,10 @@ export function UsageView({ session }: { session: Session | null }) {
               <CardTitle>เดือนนี้</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-mono text-2xl tabular-nums text-fg">{data.thisMonth.reports} ฉบับ</p>
+              <p className="font-mono text-2xl tabular-nums text-fg">{data.thisMonth.reports + data.thisMonth.chatMessages} ครั้ง</p>
+              <p className="mt-1 text-xs text-fg-subtle">
+                บทวิเคราะห์ {data.thisMonth.reports} ฉบับ · แชท {data.thisMonth.chatMessages} ข้อความ
+              </p>
               <p className="mt-1 font-mono text-sm tabular-nums text-fg-subtle">≈ {formatThb(data.thisMonth.costThb)} ฿</p>
             </CardContent>
           </Card>

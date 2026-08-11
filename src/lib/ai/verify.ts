@@ -1,7 +1,8 @@
 import type { Report } from "./schema";
 
 // ตรงตาม docs/05-AI-PIPELINE.md §6 — บังคับก่อนเผยแพร่ทุกครั้ง ห้ามข้าม
-const TRADE_ADVICE_PATTERN = /(ซื้อเลย|ควรขาย|ควรซื้อ|แนะนำให้ซื้อ|แนะนำให้ขาย|เป้า.*บาท|ราคาเป้าหมาย)/;
+// export ไว้ให้ verifyChatReply ด้านล่างใช้ regex เดียวกัน — กันกฎเพี้ยนระหว่างสองฟีเจอร์
+export const TRADE_ADVICE_PATTERN = /(ซื้อเลย|ควรขาย|ควรซื้อ|แนะนำให้ซื้อ|แนะนำให้ขาย|เป้า.*บาท|ราคาเป้าหมาย)/;
 const SR_TOLERANCE = 0.3; // ±30% ของราคาปัจจุบัน
 const MIN_SOURCES_FOR_FULL_CONFIDENCE = 3;
 
@@ -63,4 +64,33 @@ export function verifyReport(report: Report, validSourceIds: Set<string>, curren
   }
 
   return { report: result, warnings, hasTradeAdviceViolation };
+}
+
+const CITATION_PATTERN = /\[([a-zA-Z0-9-]+)\]/g;
+
+export interface ChatVerifyResult {
+  text: string;
+  citedSourceIds: string[];
+  hasTradeAdviceViolation: boolean;
+}
+
+// เวอร์ชันแชท — ข้อความอิสระไม่มี field แยกให้กรองทีละส่วนแบบ verifyReport ข้างบน
+// เลยสแกนทั้งข้อความ: ดึง [sourceId] ที่อ้างอิงจริงออกมาเป็น citedSourceIds, ตัด [id] ปลอมทิ้งเงียบ ๆ
+// (กันโมเดลหลอนอ้าง source ที่ไม่มีจริง), แล้วสแกนคำแนะนำซื้อขายด้วย pattern เดียวกับ verifyReport
+export function verifyChatReply(text: string, validSourceIds: Set<string>): ChatVerifyResult {
+  const cited = new Set<string>();
+
+  const cleaned = text.replace(CITATION_PATTERN, (match, id: string) => {
+    if (validSourceIds.has(id)) {
+      cited.add(id);
+      return match;
+    }
+    return "";
+  });
+
+  return {
+    text: cleaned,
+    citedSourceIds: [...cited],
+    hasTradeAdviceViolation: TRADE_ADVICE_PATTERN.test(cleaned),
+  };
 }

@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/api/client";
 
 export interface UsageResponse {
-  today: { reports: number; costThb: number };
-  thisMonth: { reports: number; costThb: number };
+  today: { reports: number; chatMessages: number; costThb: number };
+  thisMonth: { reports: number; chatMessages: number; costThb: number };
   quota: { dailyLimit: number; resetsAt: number };
 }
 
