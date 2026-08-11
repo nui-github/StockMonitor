@@ -15,6 +15,13 @@
       "when": 1786412318719,
       "tag": "0001_overjoyed_rhino",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786413316687,
+      "tag": "0002_outstanding_kabuki",
+      "breakpoints": true
     }
   ]
 }

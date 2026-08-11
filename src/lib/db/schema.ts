@@ -4,6 +4,7 @@ import {
   varchar,
   timestamp,
   doublePrecision,
+  numeric,
   bigint,
   integer,
   boolean,
@@ -197,6 +198,23 @@ export const alerts = pgTable(
     lastFiredAt: timestamp("last_fired_at", { withTimezone: true }),
   },
   (t) => [index("idx_alerts_active").on(t.isActive, t.symbol)],
+);
+
+export const portfolioHoldings = pgTable(
+  "portfolio_holdings",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: varchar("user_id", { length: 64 })
+      .notNull()
+      .references(() => users.id),
+    symbol: varchar("symbol", { length: 24 }).notNull(),
+    // เก็บเป็น numeric (string ฝั่ง JS) ไม่ใช่ float — กันปัดเศษตอนคำนวณ P/L (docs/03 §"ข้อมูลราคา")
+    quantity: numeric("quantity", { precision: 20, scale: 8 }).notNull(),
+    costBasis: numeric("cost_basis", { precision: 20, scale: 8 }).notNull(),
+    purchasedAt: timestamp("purchased_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("idx_portfolio_user").on(t.userId)],
 );
 
 export const pushSubscriptions = pgTable(
