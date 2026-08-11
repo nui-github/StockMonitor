@@ -3,9 +3,13 @@
 import { Search, Sparkles } from "lucide-react";
 import type { Session } from "next-auth";
 import { siteConfig } from "@/lib/config/site";
+import { useI18n } from "@/i18n/provider";
 import { AuthButton } from "./AuthButton";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function TopBar({ onOpenSearch, session }: { onOpenSearch: () => void; session: Session | null }) {
+  const { t } = useI18n();
+
   return (
     <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border-soft bg-surface-1/80 px-4 backdrop-blur">
       <div className="flex items-center gap-2 font-semibold text-fg">
@@ -22,12 +26,13 @@ export function TopBar({ onOpenSearch, session }: { onOpenSearch: () => void; se
           className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle"
           aria-hidden="true"
         />
-        ค้นหาหุ้น, ETF, ทองคำ…
+        {t("topbar.searchPlaceholder")}
       </button>
       <kbd className="hidden rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-fg-subtle sm:inline">
         ⌘K
       </kbd>
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-3">
+        <LanguageSwitcher />
         <AuthButton session={session} />
       </div>
     </header>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/config/site";
+import { Trans } from "@/i18n/Trans";
 
 const legalLinks = [
   { href: "/disclaimer", label: "ข้อจำกัดความรับผิดชอบ" },
@@ -12,7 +13,7 @@ export function Footer() {
     <footer className="border-t border-border-soft px-4 py-4 sm:px-6">
       <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-2 text-xs text-fg-subtle sm:flex-row">
         <p>
-          © {new Date().getFullYear()} {siteConfig.name} — ข้อมูลเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน
+          © {new Date().getFullYear()} {siteConfig.name} — <Trans k="footer.tagline" />
         </p>
         <nav className="flex items-center gap-4">
           {legalLinks.map((l) => (

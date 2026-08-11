@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "overview": "ภาพรวม",
+    "markets": "ตลาด",
+    "watchlist": "ติดตาม",
+    "compare": "เปรียบเทียบ",
+    "screener": "กรองสินทรัพย์",
+    "portfolio": "พอร์ต",
+    "alerts": "แจ้งเตือน",
+    "usage": "การใช้งาน AI"
+  },
+  "topbar": {
+    "searchPlaceholder": "ค้นหาหุ้น, ETF, ทองคำ…"
+  },
+  "footer": {
+    "tagline": "ข้อมูลเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน"
+  }
+}

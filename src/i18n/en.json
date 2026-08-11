@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "markets": "Markets",
+    "watchlist": "Watchlist",
+    "compare": "Compare",
+    "screener": "Screener",
+    "portfolio": "Portfolio",
+    "alerts": "Alerts",
+    "usage": "AI Usage"
+  },
+  "topbar": {
+    "searchPlaceholder": "Search stocks, ETFs, gold…"
+  },
+  "footer": {
+    "tagline": "For educational purposes only — not investment advice"
+  }
+}
