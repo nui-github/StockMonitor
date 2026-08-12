@@ -19,7 +19,7 @@ export function TopBar({ onOpenSearch, session }: { onOpenSearch: () => void; se
       <button
         type="button"
         onClick={onOpenSearch}
-        className="relative ml-2 flex h-9 max-w-sm flex-1 items-center rounded-md border border-border bg-surface-2 pl-9 pr-3 text-left text-sm text-fg-subtle outline-none transition-colors hover:border-accent/40 focus-visible:border-accent"
+        className="relative ml-2 flex h-9 max-w-sm flex-1 items-center rounded-md border border-border bg-surface-2 pl-9 pr-3 text-left text-sm text-fg-subtle transition-colors hover:border-accent/40 focus-visible:border-accent"
       >
         <Search
           size={16}

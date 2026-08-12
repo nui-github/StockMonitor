@@ -49,7 +49,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           onKeyDown={handleKeyDown}
           placeholder="พิมพ์ชื่อหุ้น, ETF, ทองคำ…"
           aria-label="ค้นหาสินทรัพย์"
-          className="h-10 w-full rounded-md border border-border bg-surface-2 pl-9 pr-3 text-sm text-fg placeholder:text-fg-subtle outline-none focus-visible:border-accent"
+          className="h-10 w-full rounded-md border border-border bg-surface-2 pl-9 pr-3 text-sm text-fg placeholder:text-fg-subtle focus-visible:border-accent"
         />
       </div>
 

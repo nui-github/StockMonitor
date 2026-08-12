@@ -57,7 +57,7 @@ export function AlertForm({
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ค้นหาหุ้น, ETF, ทองคำ…"
             aria-label="ค้นหาสินทรัพย์เพื่อตั้งเตือน"
-            className="h-10 w-full rounded-md border border-border bg-surface-2 pl-9 pr-3 text-sm text-fg placeholder:text-fg-subtle outline-none focus-visible:border-accent"
+            className="h-10 w-full rounded-md border border-border bg-surface-2 pl-9 pr-3 text-sm text-fg placeholder:text-fg-subtle focus-visible:border-accent"
           />
           {query.length > 0 && (
             <div className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-border bg-surface-1 shadow-[var(--shadow-card)]">
@@ -109,7 +109,7 @@ export function AlertForm({
           onChange={(e) => setValue(e.target.value)}
           placeholder={TYPE_OPTIONS.find((o) => o.key === type)?.placeholder}
           aria-label="ค่าเงื่อนไขการแจ้งเตือน"
-          className="h-10 w-full rounded-md border border-border bg-surface-2 px-3 font-mono text-sm tabular-nums text-fg placeholder:text-fg-subtle outline-none focus-visible:border-accent"
+          className="h-10 w-full rounded-md border border-border bg-surface-2 px-3 font-mono text-sm tabular-nums text-fg placeholder:text-fg-subtle focus-visible:border-accent"
         />
         {TYPE_OPTIONS.find((o) => o.key === type)?.unit && (
           <span className="text-sm text-fg-subtle">{TYPE_OPTIONS.find((o) => o.key === type)?.unit}</span>

@@ -51,7 +51,7 @@ export function PortfolioForm({
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ค้นหาหุ้น, ETF, ทองคำ…"
             aria-label="ค้นหาสินทรัพย์เพื่อเพิ่มเข้าพอร์ต"
-            className="h-10 w-full rounded-md border border-border bg-surface-2 pl-9 pr-3 text-sm text-fg placeholder:text-fg-subtle outline-none focus-visible:border-accent"
+            className="h-10 w-full rounded-md border border-border bg-surface-2 pl-9 pr-3 text-sm text-fg placeholder:text-fg-subtle focus-visible:border-accent"
           />
           {query.length > 0 && (
             <div className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-border bg-surface-1 shadow-[var(--shadow-card)]">
@@ -87,7 +87,7 @@ export function PortfolioForm({
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="เช่น 10"
-            className="h-10 rounded-md border border-border bg-surface-2 px-3 font-mono text-sm tabular-nums text-fg placeholder:text-fg-subtle outline-none focus-visible:border-accent"
+            className="h-10 rounded-md border border-border bg-surface-2 px-3 font-mono text-sm tabular-nums text-fg placeholder:text-fg-subtle focus-visible:border-accent"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -100,7 +100,7 @@ export function PortfolioForm({
             value={costBasis}
             onChange={(e) => setCostBasis(e.target.value)}
             placeholder="เช่น 220.50"
-            className="h-10 rounded-md border border-border bg-surface-2 px-3 font-mono text-sm tabular-nums text-fg placeholder:text-fg-subtle outline-none focus-visible:border-accent"
+            className="h-10 rounded-md border border-border bg-surface-2 px-3 font-mono text-sm tabular-nums text-fg placeholder:text-fg-subtle focus-visible:border-accent"
           />
         </label>
       </div>

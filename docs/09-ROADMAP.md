@@ -60,7 +60,9 @@
 - [x] `/api/v1/watchlist` CRUD + ownership check (auth ทำไปแล้วใน Phase 3)
 - [x] Security headers, CSP, rate limit tuning
 - [x] SEO: metadata ต่อ symbol, OG image, sitemap, robots
-- [ ] a11y audit + Lighthouse — **ยังไม่เคยรัน** ไม่มีรายงานผลเก็บไว้ในโปรเจกต์
+- [x] a11y audit (axe-core WCAG 2.1 AA, 10 หน้า + dialog + mobile 375px + keyboard tab order) — clean ทุกหน้า
+      แก้ที่เจอ: `--color-fg-subtle` contrast ตก (2.99-3.66) และ `outline-none` ฆ่า focus indicator 9 จุด
+      **ยังไม่ได้รัน Lighthouse** (perf/SEO/best-practices ยังไม่เคยวัด)
 - [x] หน้า legal + footer
 - [x] E2E Playwright: search → symbol → analysis → watchlist (`tests/e2e/flow.spec.ts`, 3 test)
 

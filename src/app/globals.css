@@ -10,9 +10,12 @@
   --color-border-soft: #131b24;
 
   /* text */
+  /* ทั้ง 3 ระดับต้องผ่าน WCAG AA (4.5:1) บนทุก surface — surface-3 (#16202c) คือพื้นหลังที่สว่างสุด จึงเป็นตัวตัดสิน
+     fg-subtle เดิม #5c6a7d ตก (2.99-3.66 ทุกหน้า จาก axe audit) — #7d8a9d คือค่าที่เข้มสุดที่ยังผ่าน (worst 4.69)
+     ตั้งใจไม่ทำให้สว่างกว่านี้ เพราะจะกลืนกับ fg-muted จนเสียลำดับชั้น 3 ระดับ */
   --color-fg: #e8edf4;
   --color-fg-muted: #93a1b3;
-  --color-fg-subtle: #5c6a7d;
+  --color-fg-subtle: #7d8a9d;
 
   /* semantic */
   --color-up: #10e098;

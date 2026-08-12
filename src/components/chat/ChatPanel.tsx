@@ -139,7 +139,7 @@ export function ChatPanel({ symbol, session }: { symbol: string; session: Sessio
             disabled={send.isPending}
             aria-label="พิมพ์ข้อความแชท"
             maxLength={500}
-            className="h-10 flex-1 rounded-md border border-border bg-surface-2 px-3 text-sm text-fg placeholder:text-fg-subtle outline-none focus-visible:border-accent disabled:opacity-60"
+            className="h-10 flex-1 rounded-md border border-border bg-surface-2 px-3 text-sm text-fg placeholder:text-fg-subtle focus-visible:border-accent disabled:opacity-60"
           />
           <Button size="sm" onClick={handleSend} disabled={send.isPending || input.trim().length === 0}>
             <Send size={14} aria-hidden="true" />
