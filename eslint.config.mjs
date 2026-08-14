@@ -59,7 +59,8 @@ const eslintConfig = [
     },
   },
   {
-    ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"],
+    // .next-e2e คือ build output ของ Playwright (ดู playwright.config.ts) — ต้อง ignore เหมือน .next
+    ignores: [".next/**", ".next-e2e/**", "out/**", "build/**", "next-env.d.ts"],
   },
 ];
 

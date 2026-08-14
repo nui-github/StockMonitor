@@ -27,6 +27,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // e2e ตั้ง NEXT_DIST_DIR=.next-e2e เพื่อ build ลงโฟลเดอร์แยก — ถ้าใช้ .next ร่วมกับ dev server ที่รันค้างอยู่
+  // `next build` จะเขียนทับไฟล์ใต้เท้า dev server ทำให้พังยับด้วย ENOENT รัว ๆ (เจอมาแล้ว ต้อง restart กู้)
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
+
   async headers() {
     // CSP เข้มงวดไป block Turbopack HMR websocket ตอน dev — ใช้เฉพาะ production build
     if (process.env.NODE_ENV !== "production") return [];

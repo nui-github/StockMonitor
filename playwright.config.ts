@@ -6,6 +6,10 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = Number(process.env.E2E_PORT ?? 4317);
 const BASE_URL = `http://localhost:${PORT}`;
 
+// build ลงโฟลเดอร์แยกจาก .next ที่ dev server ใช้อยู่ — ไม่งั้น `next build` เขียนทับไฟล์ใต้เท้า dev server
+// ที่รันค้างอยู่ ทำให้ dev พังด้วย ENOENT รัว ๆ ต้อง restart กู้ (คนละเรื่องกับพอร์ตชน แต่เจอพร้อมกันได้)
+const DIST_DIR = ".next-e2e";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -18,7 +22,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `npm run build && npm run start -- --port ${PORT}`,
+    command: `NEXT_DIST_DIR=${DIST_DIR} npm run build && NEXT_DIST_DIR=${DIST_DIR} npm run start -- --port ${PORT}`,
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
